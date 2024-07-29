@@ -1,42 +1,29 @@
-import 'package:flutter/material.dart';
-import '../widget/products_item.dart';
+import 'dart:developer';
 
-import '../model/Product.dart';
+import 'package:flutter/material.dart';
+import 'package:myflutter/widget/products_grid.dart';
+
 
 class ProductsOverviewScreen extends StatelessWidget {
-  ProductsOverviewScreen({super.key});
-
-  final List<Product> loadedProducts = [
-    Product(id: 1, name: 'Machine Learning: 4 Books in 1', description: 'An Overview for Beginners to Master', unitPrice: 35.01, imageUrl: 'https://i.postimg.cc/rF9fSZg4/BOOK-PROGRAMMING-1011.jpg',),
-    Product(id: 2, name: 'Beginning Programming All-in-One', description: 'Desk Reference For Dummies', unitPrice: 32.89, imageUrl: 'https://i.postimg.cc/vBLVpk4L/BOOK-PROGRAMMING-1010.jpg',),
-    Product(id: 3, name: 'Head First Design Patterns', description: 'Building Extensible and Maintainable OOP', unitPrice: 32.43, imageUrl: 'https://i.postimg.cc/4NF9kzxM/BOOK-PROGRAMMING-1009.jpg',),
-    Product(id: 4, name: 'Effective C', description: 'An Introduction to Professional C Programming', unitPrice: 35.01, imageUrl: 'https://i.postimg.cc/sXyB9mTB/BOOK-PROGRAMMING-1008.jpg',),
-    Product(id: 5, name: 'Computer Programming: The Bible', description: 'Learn from the basics to advanced', unitPrice: 14.95, imageUrl: 'https://i.postimg.cc/4NMmFs8R/BOOK-PROGRAMMING-1007.jpg',),
-    Product(id: 6, name: 'The Self-Taught Programmer', description: 'The Definitive Guide to Programming', unitPrice: 21.87, imageUrl: 'https://i.postimg.cc/Dwk7XZj0/BOOK-PROGRAMMING-1006.jpg',),
-    Product(id: 7, name: 'Python Programming for Beginners', description: 'The Ultimate Guide for Beginners', unitPrice: 21.99, imageUrl: 'https://i.postimg.cc/wBFzZk6R/BOOK-PROGRAMMING-1005.jpg',),
-  ];
+  const ProductsOverviewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Shop'),),
-      body: GridView.builder(
-          padding: const EdgeInsets.all(10),
-          itemCount: loadedProducts.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 2/3,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-          ), 
-          itemBuilder: (ctx, idx) =>
-              ProductsItem (
-                id: loadedProducts[idx].id,
-                name: loadedProducts[idx].name,
-                imageUrl: loadedProducts[idx].imageUrl,
-                unitPrice: loadedProducts[idx].unitPrice,
-              )
+      appBar: AppBar(
+        title: const Text('My Shop'),
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (_) => [
+              const PopupMenuItem(value: 0, child: Text('Only favorites')),
+              const PopupMenuItem(value: 1, child: Text('Show All')),
+            ],
+            onSelected: (int selectedValue) => log('Value $selectedValue'),
+          )
+        ],
       ),
+      body: const ProductsGrid(),
     );
   }
 

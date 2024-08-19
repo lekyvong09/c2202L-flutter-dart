@@ -62,14 +62,27 @@ class _AdminProductEditScreen extends State<AdminProductEditScreen> {
     if (_editedProduct.id != 0) {
       context.read<ProductProvider>().updateProduct(_editedProduct);
     } else {
-      context.read<ProductProvider>().addProduct(_editedProduct).then((value) {
-        _timer = Timer(const Duration(seconds: 10), () {
+      try {
+        await context.read<ProductProvider>().addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog<Null>(context: context, builder: (ctx) => AlertDialog(
+          title: const Text('Error Message'),
+          content: Text(error.toString()),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            )
+          ],
+        ));
+      } finally {
+        _timer = Timer(const Duration(milliseconds: 1), () {
           setState(() {
             _isLoading = false;
           });
           Navigator.of(context).pop();
         });
-      });
+      }
     }
 
   }

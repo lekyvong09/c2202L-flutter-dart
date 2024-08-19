@@ -29,20 +29,21 @@ class ProductProvider with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     final url = Uri.parse('http://localhost:8080/api/products/add');
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Accept': '*/*'
     };
-    return httpClient.post(url, headers: headers, body: json.encode({
-      'name': product.name,
-      'description': product.description,
-      'unitPrice': product.unitPrice,
-      'imageUrl': product.imageUrl,
-      'date': DateTime.now().toIso8601String(),
-      'category': 'U',
-    })).then((response) {
+    try {
+      final response = await httpClient.post(url, headers: headers, body: json.encode({
+        'name': product.name,
+        'description': product.description,
+        'unitPrice': product.unitPrice,
+        'imageUrl': product.imageUrl,
+        'date': DateTime.now().toIso8601String(),
+        'category': 'U',
+      }));
       final res = json.decode(response.body);
       final newProduct = Product(
         name: res['name'],
@@ -53,7 +54,9 @@ class ProductProvider with ChangeNotifier {
       );
       _items.add(newProduct);
       notifyListeners();
-    });
+    } catch (error) {
+      rethrow;
+    }
   }
 
   void updateProduct(Product product) {

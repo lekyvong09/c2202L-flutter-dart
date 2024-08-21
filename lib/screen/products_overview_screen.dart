@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:myflutter/model/cart.dart';
+import 'package:myflutter/provider/product_provider.dart';
 import 'package:myflutter/screen/cart_screen.dart';
 import 'package:myflutter/widget/badge.dart';
 import 'package:myflutter/widget/navbar_drawer.dart';
@@ -22,6 +23,14 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 
 class _ProductsOverviewScreen extends State<ProductsOverviewScreen> {
+  
+  @override
+  void didChangeDependencies() {
+    context.watch<ProductProvider>().fetchAndSetProducts()
+        .then((value) => null);
+    super.didChangeDependencies();
+  }
+  
   bool _showFavoritesOnly = false;
   @override
   Widget build(BuildContext context) {
@@ -57,7 +66,10 @@ class _ProductsOverviewScreen extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const NavbarDrawer(),
-      body: ProductsGrid(_showFavoritesOnly),
+      body: RefreshIndicator(
+        onRefresh: () async => await context.read<ProductProvider>().fetchAndSetProducts(),
+        child: ProductsGrid(_showFavoritesOnly),
+      ) ,
     );
   }
 

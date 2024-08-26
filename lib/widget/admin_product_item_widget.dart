@@ -29,7 +29,7 @@ class AdminProductItemWidget extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.delete),
             color: Theme.of(context).errorColor,
-            onPressed: () => context.read<ProductProvider>().deleteProduct(id),
+            onPressed: () async => await context.read<ProductProvider>().deleteProduct(id),
           ),
         ],),
       ),

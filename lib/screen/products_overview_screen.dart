@@ -15,6 +15,7 @@ enum FilterOptions {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = '/product-overview';
   const ProductsOverviewScreen({super.key});
 
   @override
@@ -23,7 +24,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 
 class _ProductsOverviewScreen extends State<ProductsOverviewScreen> {
-  
   @override
   void didChangeDependencies() {
     context.watch<ProductProvider>().fetchAndSetProducts()

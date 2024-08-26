@@ -82,9 +82,39 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     final prodIndex = _items.indexWhere((element) => element.id == product.id);
+
     if (prodIndex > -1) {
+      final url = Uri.parse('http://localhost:8080/api/products/update');
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
+      };
+      try {
+        final response = await httpClient.post(url, headers: headers, body: json.encode({
+          'name': product.name,
+          'description': product.description,
+          'unitPrice': product.unitPrice,
+          'imageUrl': product.imageUrl,
+          'date': DateTime.now().toIso8601String(),
+          'id': product.id
+        }));
+        final res = json.decode(response.body);
+        final updatedProduct = Product(
+          name: res['name'],
+          description: res['description'],
+          unitPrice: res['unitPrice'],
+          imageUrl: res['imageUrl'],
+          id: res['id'],
+        );
+        _items[prodIndex] = updatedProduct;
+        notifyListeners();
+      } catch (error) {
+        rethrow;
+      }
+
+
       _items[prodIndex] = product;
       notifyListeners();
     } else {
@@ -92,8 +122,17 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void deleteProduct(int id) {
-    _items.removeWhere((element) => element.id == id);
-    notifyListeners();
+  Future<void> deleteProduct(int id) async {
+    final url = Uri.parse('http://localhost:8080/api/products/delete/$id');
+
+    try {
+      final response = await httpClient.delete(url);
+      if (response.statusCode == 204) {
+        _items.removeWhere((element) => element.id == id);
+        notifyListeners();
+      }
+    } catch (error) {
+      rethrow;
+    }
   }
 }

@@ -60,7 +60,23 @@ class _AdminProductEditScreen extends State<AdminProductEditScreen> {
     });
     _form.currentState!.save();
     if (_editedProduct.id != 0) {
-      context.read<ProductProvider>().updateProduct(_editedProduct);
+      try {
+        await context.read<ProductProvider>().updateProduct(_editedProduct);
+      } catch (error) {
+        await showDialog<Null>(context: context, builder: (ctx) => AlertDialog(
+          title: const Text('Error Message'),
+          content: Text(error.toString()),
+          actions: [
+            TextButton(child: const Text('OK'), onPressed: () => Navigator.of(ctx).pop(),)
+          ],
+        ));
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      }
+
     } else {
       try {
         await context.read<ProductProvider>().addProduct(_editedProduct);

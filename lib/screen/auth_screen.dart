@@ -143,7 +143,7 @@ class _AuthCard extends State<AuthCard> {
                 else
                   ElevatedButton(
                     onPressed: _submit,
-                    child: const Text('LOGIN')
+                    child: Text(_authMode == AuthMode.LOGIN ? 'LOGIN' : 'REGISTER'),
                   ),
                 TextButton(
                   onPressed: _switchAuthMode,

@@ -1,6 +1,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:myflutter/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -60,7 +62,7 @@ class _AuthCard extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -73,6 +75,7 @@ class _AuthCard extends State<AuthCard> {
       /// login
     } else {
       /// register
+      await context.read<AuthProvider>().signup(_authData['email']!, _authData['password']!);
     }
     setState(() { _isLoading = false; });
   }

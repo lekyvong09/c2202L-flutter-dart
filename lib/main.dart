@@ -26,10 +26,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (ctx) => ProductProvider()),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => Orders()),
-        ChangeNotifierProvider(create: (ctx) => AuthProvider()),
+        // ChangeNotifierProvider(create: (ctx) => Orders()),
+        // ChangeNotifierProvider(create: (ctx) => AuthProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, Orders>(
+            create: (ctx) => Orders(Provider.of<AuthProvider>(ctx, listen: false).token, []),
+            update: (ctx, auth, Orders? previous) => Orders((auth.token), previous!.orders),
+        )
       ],
-      child: MaterialApp(
+      child: Consumer<AuthProvider>(builder: (ctx, auth, _) => MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
             fontFamily: 'Roboto',
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.deepOrangeAccent,
             )
         ),
-        home: const AuthScreen(),
+        home: auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routeName: (ctx) => const CartScreen(),
@@ -48,7 +52,7 @@ class MyApp extends StatelessWidget {
           AdminProductEditScreen.routeName: (ctx) => const AdminProductEditScreen(),
           ProductsOverviewScreen.routeName: (ctx) => const ProductsOverviewScreen(),
         },
-      ),
+      ),) ,
     );
   }
 }

@@ -18,13 +18,22 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
-  final List<Order> _orders = [];
+  final String authToken;
+  List<Order> _orders = [];
+
+  Orders(this.authToken, this._orders);
 
   List<Order> get orders {
     return [..._orders];
   }
 
   void addOrder(List<CartItem> cartItems, double total) {
+    final url = Uri.parse('http://localhost:8080/api/checkout');
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Accept': '*/*',
+      'Authorization': 'Bearer .....',
+    };
     _orders.insert(
         0,
         Order(

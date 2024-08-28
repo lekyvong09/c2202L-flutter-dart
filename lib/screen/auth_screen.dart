@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:myflutter/model/HttpException.dart';
 import 'package:myflutter/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -62,6 +63,14 @@ class _AuthCard extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String message) {
+    showDialog(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Error Msg'),
+      content: Text(message),
+      actions: [TextButton(child: const Text('OK'), onPressed: () => Navigator.of(ctx).pop(),)],
+    ));
+  }
+
   void _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -73,6 +82,14 @@ class _AuthCard extends State<AuthCard> {
 
     if (_authMode == AuthMode.LOGIN) {
       /// login
+      try {
+        await context.read<AuthProvider>().login(_authData['email']!, _authData['password']!);
+      } on HttpException catch (error) {
+        _showErrorDialog(error.toString());
+      } catch (err) {
+        _showErrorDialog(err.toString());
+      }
+
     } else {
       /// register
       await context.read<AuthProvider>().signup(_authData['email']!, _authData['password']!);

@@ -67,4 +67,9 @@ class AuthProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  void logout() {
+    _token = '';
+    notifyListeners();
+  }
 }

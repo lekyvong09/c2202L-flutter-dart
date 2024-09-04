@@ -30,8 +30,8 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 10,),
                   TextButton(
-                    onPressed: () {
-                      context.read<Orders>().addOrder(
+                    onPressed: () async {
+                      await context.read<Orders>().addOrder(
                           cart.items.values.toList(),
                           cart.totalAmount
                       );

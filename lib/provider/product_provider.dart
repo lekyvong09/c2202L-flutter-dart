@@ -7,6 +7,7 @@ import 'package:myflutter/model/product.dart';
 import 'package:http/http.dart' as httpClient;
 
 class ProductProvider with ChangeNotifier {
+  final String authToken;
   List<Product> _items = [
     // Product(id: 1, name: 'Machine Learning: 4 Books in 1', description: 'An Overview for Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 o Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1 Beginners to Master Machine Learning: 4 Books in 1', unitPrice: 35.01, imageUrl: 'https://i.postimg.cc/rF9fSZg4/BOOK-PROGRAMMING-1011.jpg',),
     // Product(id: 2, name: 'Beginning Programming All-in-One', description: 'Desk Reference For Dummies', unitPrice: 32.89, imageUrl: 'https://i.postimg.cc/vBLVpk4L/BOOK-PROGRAMMING-1010.jpg',),
@@ -16,6 +17,8 @@ class ProductProvider with ChangeNotifier {
     // Product(id: 6, name: 'The Self-Taught Programmer', description: 'The Definitive Guide to Programming', unitPrice: 21.87, imageUrl: 'https://i.postimg.cc/Dwk7XZj0/BOOK-PROGRAMMING-1006.jpg',),
     // Product(id: 7, name: 'Python Programming for Beginners', description: 'The Ultimate Guide for Beginners', unitPrice: 21.99, imageUrl: 'https://i.postimg.cc/wBFzZk6R/BOOK-PROGRAMMING-1005.jpg',),
   ];
+
+  ProductProvider(this.authToken,this._items);
 
   List<Product> get items {
     return [..._items];
@@ -30,10 +33,20 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.parse('http://localhost:8080/api/products');
+    var url = Uri.parse('http://localhost:8080/api/products');
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Accept': '*/*',
+      'Authorization': 'Bearer $authToken'
+    };
+
     try {
       final response = await httpClient.get(url);
       final extractedData = json.decode(response.body)['products'] as List<dynamic>;
+
+      url = Uri.parse('http://localhost:8080/api/favorite');
+      final favoriteResponse = await httpClient.get(url, headers: headers);
+      Map<String, dynamic> favoriteData = json.decode(favoriteResponse.body);
 
       final List<Product> loadProducts = [];
       for (var element in extractedData) {
@@ -42,7 +55,7 @@ class ProductProvider with ChangeNotifier {
           description: element['description'],
           unitPrice: element['unitPrice'],
           imageUrl: element['imageUrl'],
-          id: element['id'],
+          id: element['id'], isFavorite: favoriteData[element['id'].toString()] ?? false
         ));
       }
       _items = loadProducts;

@@ -11,6 +11,7 @@ import 'package:myflutter/screen/order_screen.dart';
 import 'package:myflutter/screen/product_detail_screen.dart';
 import 'package:myflutter/screen/products_overview_screen.dart';
 import 'package:provider/provider.dart';
+import './screen/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,17 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.deepOrangeAccent,
             )
         ),
-        home: auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
+        home: auth.isAuth
+            ? const ProductsOverviewScreen()
+            : FutureBuilder(
+                future: Future<bool>.delayed(
+                    const Duration(seconds: 10), () async => await auth.tryAutoLogin(),
+                ),
+                builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
+                  snapshot.connectionState == ConnectionState.waiting
+                    ? const SplashScreen()
+                    : const AuthScreen(),
+            ),
         routes: {
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routeName: (ctx) => const CartScreen(),
